@@ -18,6 +18,7 @@ function App() {
     photo: '',
     password: '',
     isValid: false,
+    error: ''
   });
 
   const provider = new firebase.auth.GoogleAuthProvider();
@@ -94,16 +95,22 @@ function App() {
        console.log(res);
        const createdUser= {...user};
        createdUser.isSignedIn= true;
+       createdUser.error= '';
        setUser(createdUser);
      })
      .catch(err=>{
-       console.log(err);
+       console.log(err.message);
+       const createdUser= {...user};
+       createdUser.isSignedIn= false;
+       createdUser.error= err.message;
+       setUser(createdUser);
      })
     }
     else{
       console.log("form is not valid", user)
     }
     event.preventDefault();
+    // event.target.reset();
     
   }
 
@@ -118,6 +125,7 @@ function App() {
         user.isSignedIn && <div>
           <p>Welcome, {user.name}</p>
           <img src={user.photo} alt=""/>
+          <p>Your email: {user.email}</p>
         </div>
       }
       <h1>Our own authentication</h1>
@@ -130,6 +138,9 @@ function App() {
           <br/>
           <button onClick={createAccount} >Create Account</button>
       </form>
+      {
+        user.error && <p>{user.error}</p>
+      }
      
     </div>
   );
